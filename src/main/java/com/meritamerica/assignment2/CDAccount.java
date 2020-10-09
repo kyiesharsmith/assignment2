@@ -21,7 +21,7 @@ public class CDAccount extends BankAccount {
 		return super.getInterestRate();
 	}
 	public int getTerm() {
-		return.offering.getTerm();
+		return offering.getTerm();
 	}
 	public java.util.Date getstartDate(){
 		return this.startDate;

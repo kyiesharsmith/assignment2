@@ -119,6 +119,7 @@ public class SolutionTest {
     	
     	accountHolder.addCheckingAccount(checkingAccount4);
     	accountHolder.addSavingsAccount(savingsAccount4);   
+    	System.out.println(Arrays.toString(accountHolder.getCheckingAccounts()));
     	
     	assertThat(Arrays.asList(accountHolder.getCheckingAccounts()), not(hasItem(checkingAccount4)));
     	assertThat(Arrays.asList(accountHolder.getSavingsAccounts()), not(hasItem(savingsAccount4)));    	

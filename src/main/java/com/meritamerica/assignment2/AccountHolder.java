@@ -28,8 +28,9 @@ public static final int YEARS = 3;
 	public AccountHolder(String firstName, 
 			String middleName, 
 			String lastName, 
-			String ssn, 
- {
+			String ssn ){
+
+ 
 		//initializing values
 		this.firstName = firstName;
 	    this.middleName = middleName;
@@ -50,9 +51,9 @@ public static final int YEARS = 3;
 	    this.middleName = middleName;
 	    this.lastName = lastName;
 	    this.ssn = ssn;
-	    this.accounts = {new SavingsAccount(savingsAccountOpeningBalance),
-	    				 new CheckingAccount(checkingAccountOpeningBalance)};
-		
+	    this.accounts = new BankAccount[0];
+	    this.addCheckingAccount(checkingAccountOpeningBalance);
+	    this.addSavingsAccount(savingsAccountOpeningBalance);
 	}
 	
 	public String getFirstName() {
@@ -88,8 +89,12 @@ public static final int YEARS = 3;
 	}
 	
 	public CheckingAccount addCheckingAccount(double openingBalance) {
-		CheckingAccount cAccount = new  CheckingAccount(openingBalance);  
-		BankAccount[] bigger = new BankAccount[this,accounts.length+1];
+		CheckingAccount cAccount = new  CheckingAccount(openingBalance); 
+		
+		if((this.getCheckingBalance()+ this.getSavingsBalance()+cAccount.getBalance()) >= 250000) {
+			return cAccount;
+		}	
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
 		
 		for(int i = 0; i<this.accounts.length;i++) {
 			bigger[i] = this.accounts[i];
@@ -101,8 +106,13 @@ public static final int YEARS = 3;
 		
 	}
 	public CheckingAccount addCheckingAccount(CheckingAccount checkingAccount) {
-		CheckingAccount cAccount = checkingAccount;  
-		BankAccount[] bigger = new BankAccount[this,accounts.length+1];
+		
+		CheckingAccount cAccount = checkingAccount;
+		
+		if((this.getCheckingBalance()+ this.getSavingsBalance()+cAccount.getBalance()) >= 250000) {
+			return cAccount;
+		}	
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
 		
 		for(int i = 0; i<this.accounts.length;i++) {
 			bigger[i] = this.accounts[i];
@@ -138,7 +148,7 @@ public static final int YEARS = 3;
 		return numofChecking;
 	}
 	public double getCheckingBalance() {
-		CheckingAccounts[] cAccounts = this.getCheckingAccounts();
+		CheckingAccount[] cAccounts = this.getCheckingAccounts();
 		double cBalance = 0; 
 		for(int i = 0; i<cAccounts.length; i++) {
 			cBalance += cAccounts[i].getBalance();
@@ -147,8 +157,12 @@ public static final int YEARS = 3;
 	}
 	
 	public SavingsAccount addSavingsAccount(double openingBalance) {
-		SavingsAccount sAccount = new SavingsAccount(openingBalance);  
-		BankAccount[] bigger = new BankAccount[this,accounts.length+1];
+		SavingsAccount sAccount = new SavingsAccount(openingBalance); 
+		
+		if((this.getCheckingBalance()+ this.getSavingsBalance()+sAccount.getBalance()) >= 250000) {
+			return sAccount;
+		}	
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
 		
 		for(int i = 0; i<this.accounts.length;i++) {
 			bigger[i] = this.accounts[i];
@@ -161,8 +175,14 @@ public static final int YEARS = 3;
 	}
 	
 	public SavingsAccount addSavingsAccount(SavingsAccount savingsAccount) {
-		SavingsAccount sAccount = savingsAccount;  
-		BankAccount[] bigger = new BankAccount[this,accounts.length+1];
+		
+		SavingsAccount sAccount = savingsAccount; 
+		
+		if((this.getCheckingBalance()+ this.getSavingsBalance()+sAccount.getBalance()) >= 250000) {
+			return sAccount;
+		}	
+		
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
 		
 		for(int i = 0; i<this.accounts.length;i++) {
 			bigger[i] = this.accounts[i];
@@ -201,7 +221,7 @@ public static final int YEARS = 3;
 	}
 	
 	public double getSavingsBalance() {
-		SavingsAccounts[] sAccounts = this.getSavingsAccounts();
+		SavingsAccount[] sAccounts = this.getSavingsAccounts();
 		double sBalance = 0; 
 		for(int i = 0; i<sAccounts.length; i++) {
 			sBalance += sAccounts[i].getBalance();
@@ -210,8 +230,25 @@ public static final int YEARS = 3;
 	}
 	
 	public CDAccount addCDAccount(CDOffering offering, double openingBalance) {
+		if (offering == null) {
+			return null;
+		}
 		CDAccount cdAccount = new CDAccount(offering, openingBalance);  
-		BankAccount[] bigger = new BankAccount[this,accounts.length+1];
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
+		
+		for(int i = 0; i<this.accounts.length;i++) {
+			bigger[i] = this.accounts[i];
+		
+		}
+		bigger[this.accounts.length] = cdAccount;
+		this.accounts = bigger;
+		return cdAccount;
+		
+	}
+	public CDAccount addCDAccount(CDAccount cdAccount) {
+	
+		  
+		BankAccount[] bigger = new BankAccount[this.accounts.length+1];
 		
 		for(int i = 0; i<this.accounts.length;i++) {
 			bigger[i] = this.accounts[i];
@@ -262,7 +299,11 @@ public static final int YEARS = 3;
 	public double getCombinedBalance() {
 		double balance = 0;
 		for(int i = 0; i<this.accounts.length; i++) {
-			balance += this.accounts[i].getBalance();
+			
+			//if(this.accounts[i] instanceof CheckingAccount ||
+			  // this.accounts[i] instanceof SavingsAccount ) {
+				balance += this.accounts[i].getBalance();
+			//}
 		}
 		return balance;
 	}
@@ -271,13 +312,6 @@ public static final int YEARS = 3;
 	
 	public String toString() {
 		return "Name: " + this.firstName + this.middleName + this.lastName +"\n"
-				+ "SSN: " + this.ssn +"\n"
-				+ this.cAccount.toString() 
-				+ "Savings Account Balance: $"+ this.sAccount.getBalance() +"\n"
-				+ "Savings Account Interest Rate: "+ this.sAccount.getInterestRate() +"\n"
-				+ "Savings Account Balance in " + YEARS + " years: $"+ this.sAccount.futureValue(YEARS) +"\n";
+				+ "SSN: " + this.ssn +"\n";
 	}
-	
-}
-
 }
